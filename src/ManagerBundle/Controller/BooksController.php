@@ -2,16 +2,13 @@
 
 namespace ManagerBundle\Controller;
 
-
 use ManagerBundle\Entity\Book;
 use ManagerBundle\Form\BookAddType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-
 //require_once __DIR__.'/../../../vendor/autoload.php';
-
 
 /**
  * @Route("/books")
