@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% dump(statuses)%}
+    <a class="btn btn-default" href="{{ path('books_add') }}">
+        <button type="button" class="btn btn-primary">Add new book</button>
+    </a>
+    <table class="table table-striped">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publishing year</th>
+            <th>Upload date</th>
+            <th>Status</th>
+        </tr>
+    {% for book in books %}
+            <tr>
+                <td>{{ book.title}}</td>
+                <td>{{ book.author}}</td>
+                <td>{{ book.publishingYear|date("Y")}}</td>
+                <td>{{ book.uploadDate|date("m/d/Y")}}</td>
+                <td>
+                    <select name = "{{ book.id }}" class="target">
+                        <option value={{ book.status }}>{{ book.status }}</option>
+                        {% for status in statuses %}
+                            {% if  status != book.status %}
+                                <option value={{status}}>{{status}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+    {% endfor %}
+    </table>
+
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+
+            $( ".target" ).click(function() {
+                var select = $("option:selected", this);
+                var status = select[0].label;
+                var id = $(this).attr("name");
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ path("ajax_change") }}',
+                    data: status,
+                    dataType: 'html',
+                    success: function (data) {
+
+                    }
+                });
+                // });
+                //
+            });
+        });
+    </script>
+    <script src={{ asset('bundles/manager/js/bookAdd.js') }}></script>
+{% endblock %}

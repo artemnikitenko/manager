@@ -1,11 +1,44 @@
-{{ form_errors(form) }}
+{% extends 'base.html.twig' %}
 
-{{ form_row(form.title) }}
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
 
-{{ form_row(form.author) }}
+    <div>
+        {{ form_label(form.title) }}
+        {{ form_errors(form.title) }}
+        {{ form_widget(form.title) }}
+    </div>
+    <br>
+    <div>
+        {{ form_label(form.author) }}
+        {{ form_errors(form.author) }}
+        {{ form_widget(form.author) }}
+    </div>
+    <br>
+    <div>
+        {{ form_label(form.publishing_year) }}
+        {{ form_errors(form.publishing_year) }}
+        {{ form_widget(form.publishing_year) }}
+    </div>
+    <br>
+    <div>
+        {{ form_label(form.upload_date) }}
+        {{ form_errors(form.upload_date) }}
+        {{ form_widget(form.upload_date) }}
+    </div>
+    <br>
+    <div>
+        {{ form_label(form.status) }}
+        {{ form_errors(form.status) }}
+        <div id="status_js">
+            {{ form_widget(form.status) }}
+        </div>
+    </div>
+    <br>
+    <div>
+        {{ form_widget(form.save) }}
+    </div>
 
-{{ form_row(form.publishing_year) }}
-
-{{ form_row(form.upload_date) }}
-
-{{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}

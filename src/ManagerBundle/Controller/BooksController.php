@@ -20,6 +20,19 @@ class BooksController extends Controller
      */
     public function showBooksAction($page = 1)
     {
+        $books = $this->getDoctrine()->getRepository(Book::class)->findAll();
+
+        if (!$books) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$books
+            );
+        }
+        $statuses = array('free', 'reserved', 'taken');
+        return $this->render('@Manager/Default/booksList.html.twig', array(
+            'books' => $books,
+            'statuses' => $statuses
+        ));
+
         $book = new Book();
 
         $workflow = $this->container->get('workflow.book_status');
@@ -29,8 +42,7 @@ class BooksController extends Controller
         $workflow->apply($book, 'free');
         $workflow->apply($book, 'free');
 //        $workflow->apply($book, 'taken');
-        echo '<pre>';
-var_dump( $book); exit;
+
 // Update the currentState on the post
         try {
 //            $workflow->apply($book, 'to_review');
@@ -38,7 +50,7 @@ var_dump( $book); exit;
             // ...
         }
 
-        return $this->render('SkillBundle:Default:test.html.twig', array(
+        return $this->render('', array(
             'info' => 'info'
         ));
     }
@@ -52,21 +64,29 @@ var_dump( $book); exit;
         $form = $this->createForm(BookAddType::class, $form);
         $form->handleRequest($request);
 
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            $checkForm = $form->getData();
-//            $em = $this->getDoctrine()->getManager();
-//            $em->persist($checkForm);
-//            $em->flush();
-//
-//            return $this->render('', array(
-//                'success' => 'Success'
-//            ));
-//        }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $checkForm = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($checkForm);
+            $em->flush();
+
+            return $this->redirectToRoute('books_list');
+        }
 
         return $this->render('@Manager/Default/bookAdd.html.twig',
             array(
                 'form' => $form->createView()
             ));
+    }
+
+    /**
+     * @Route("/ajax_change_status", name="ajax_change")
+     */
+    public function ajaxChangeStatus($status)
+    {
+        echo('<pre>');
+        var_dump($status);
+        exit;
     }
 
 }
