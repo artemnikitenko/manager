@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-//require_once __DIR__.'/../../../vendor/autoload.php';
-
 /**
  * @Route("/books")
  */
@@ -23,35 +21,16 @@ class BooksController extends Controller
         $books = $this->getDoctrine()->getRepository(Book::class)->findAll();
 
         if (!$books) {
-            throw $this->createNotFoundException(
-                'No product found for id '.$books
-            );
+            return $this->render('@Manager/Default/booksList.html.twig', array(
+                'books' => '',
+                'statuses' => '',
+            ));
         }
-        $statuses = array('free', 'reserved', 'taken');
+        $statuses = ['free', 'reserved', 'taken'];
+
         return $this->render('@Manager/Default/booksList.html.twig', array(
             'books' => $books,
             'statuses' => $statuses
-        ));
-
-        $book = new Book();
-
-        $workflow = $this->container->get('workflow.book_status');
-//        $workflow->can($book, 'reserved'); // False
-
-        $workflow->can($book, 'free'); // True
-        $workflow->apply($book, 'free');
-        $workflow->apply($book, 'free');
-//        $workflow->apply($book, 'taken');
-
-// Update the currentState on the post
-        try {
-//            $workflow->apply($book, 'to_review');
-        } catch (LogicException $e) {
-            // ...
-        }
-
-        return $this->render('', array(
-            'info' => 'info'
         ));
     }
 
@@ -80,13 +59,28 @@ class BooksController extends Controller
     }
 
     /**
-     * @Route("/ajax_change_status", name="ajax_change")
+     * @Route("/ajax/change_status", name="ajax_change")
      */
-    public function ajaxChangeStatus($status)
+    public function ajaxChangeStatus(Request $request)
     {
-        echo('<pre>');
-        var_dump($status);
+        $id = $request->get('id');
+        $status = $request->get('status');
+
+        if (isset($id) && isset($status)) {
+            $repository = $this->getDoctrine()->getRepository(Book::class);
+            $book = $repository->findOneById($id);
+            $workflow = $this->container->get('workflow.book_status');
+
+            if ($book && ($workflow->can($book, $status))) {
+                $workflow->apply($book, $status);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($book);
+                $em->flush();
+                echo 'success';
+            } else {
+                echo 'error';
+            }
+        }
         exit;
     }
-
 }

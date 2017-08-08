@@ -39,7 +39,7 @@ framework:
             book_status:
                 type: 'workflow' # or 'state_machine'
                 marking_store:
-                    type: 'multiple_state' # or 'single_state'
+                    type: 'single_state' # or 'multiple_state'
                     arguments:
                         - 'status'
                 supports:
@@ -49,17 +49,13 @@ framework:
                     - taken
                     - reserved
                 transitions:
-                    free:
-                        from: free
-                        to:
-                            - taken
-                            - reserved
                     reserved:
-                        from: reserved
-                        to:
-                            - free
-                            - taken
+                        from: free
+                        to: reserved
                     taken:
+                        from: reserved
+                        to:   taken
+                    free:
                         from: taken
                         to:   free
 

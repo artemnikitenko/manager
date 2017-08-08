@@ -14,48 +14,47 @@
             <th>Status</th>
         </tr>
     {% for book in books %}
-            <tr>
-                <td>{{ book.title}}</td>
-                <td>{{ book.author}}</td>
-                <td>{{ book.publishingYear|date("Y")}}</td>
-                <td>{{ book.uploadDate|date("m/d/Y")}}</td>
-                <td>
-                    <select name = "{{ book.id }}" class="target">
-                        <option value={{ book.status }}>{{ book.status }}</option>
-                        {% for status in statuses %}
-                            {% if  status != book.status %}
-                                <option value={{status}}>{{status}}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ book.title}}</td>
+            <td>{{ book.author}}</td>
+            <td>{{ book.publishingYear|date("Y")}}</td>
+            <td>{{ book.uploadDate|date("m/d/Y")}}</td>
+            <td>
+                <select name = "{{ book.id }}" class="target">
+                    <option value={{ book.status }}>{{ book.status }}</option>
+                    {% for status in statuses %}
+                        {% if  status != book.status %}
+                            <option value={{status}}>{{status}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
     {% endfor %}
     </table>
-
-
 {% endblock %}
+
 {% block javascripts %}
     <script>
         $(document).ready(function(){
-
-            $( ".target" ).click(function() {
+            $( ".target" ).change(function() {
                 var select = $("option:selected", this);
+                var currentStatus = $(this).find("option").val();
                 var status = select[0].label;
                 var id = $(this).attr("name");
                 $.ajax({
-                    type: 'POST',
+                    type: 'GET',
                     url: '{{ path("ajax_change") }}',
-                    data: status,
+                    data: {status: status, id: id},
                     dataType: 'html',
                     success: function (data) {
-
+                        if (data == 'error') {
+                            alert('You can not select this status');
+                            $("select[name= " + id + "]").val(currentStatus);
+                        }
                     }
                 });
-                // });
-                //
             });
         });
     </script>
-    <script src={{ asset('bundles/manager/js/bookAdd.js') }}></script>
 {% endblock %}

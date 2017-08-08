@@ -31,14 +31,11 @@
     <div>
         {{ form_label(form.status) }}
         {{ form_errors(form.status) }}
-        <div id="status_js">
-            {{ form_widget(form.status) }}
-        </div>
+        {{ form_widget(form.status) }}
     </div>
     <br>
     <div>
         {{ form_widget(form.save) }}
     </div>
-
     {{ form_end(form) }}
 {% endblock %}
